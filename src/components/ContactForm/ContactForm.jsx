@@ -2,31 +2,37 @@ import { nanoid } from "nanoid";
 import * as Yup from "yup";
 import s from "./ContactForm.module.css";
 import { ErrorMessage, Field, Form, Formik } from "formik";
+import { addContact } from "../../redux/contactsSlice";
+import { useDispatch } from "react-redux";
 
-const ContactForm = ({ onAddContact }) => {
+const ContactForm = () => {
+  const dispatch = useDispatch();
   const initialValues = {
     name: "",
     number: "",
   };
-  const addSchema = Yup.object().shape({
+
+  const validationSchema = Yup.object({
     name: Yup.string().min(3).max(50).required("This field cannot be empty"),
     number: Yup.string().min(3).max(50).required("This field cannot be empty"),
   });
+
   const handleSubmit = (values, { resetForm }) => {
     const newContact = {
       id: nanoid(),
       name: values.name,
       number: values.number,
     };
-    onAddContact(newContact);
+    dispatch(addContact(newContact));
     resetForm();
   };
+
   return (
     <div className={s.formWrapper}>
       <Formik
         onSubmit={handleSubmit}
         initialValues={initialValues}
-        validationSchema={addSchema}
+        validationSchema={validationSchema}
       >
         {() => (
           <Form className={s.formAdd}>
